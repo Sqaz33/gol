@@ -13,7 +13,7 @@
 
 int main() {
     SetConsoleOutputCP(CP_UTF8); 
-    std::ifstream jn("D:/gol/config.json");
+    std::ifstream jn("config.json");
 
     nlohmann::json data = nlohmann::json::parse(jn);
 
@@ -25,7 +25,9 @@ int main() {
         std::format("dbname={} user={} password={}", dbname, user, pword)
     );
 
-    gol_crow_app::GolCrowApp app("192.168.0.102", 80, db);
+    std::string serverIP = data["serverIP"];
+    std::uint8_t serverPort = data["serverPort"];
+    gol_crow_app::GolCrowApp app(serverIP, serverPort, db);
     app.run();
 
 }

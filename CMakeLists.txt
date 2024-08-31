@@ -26,3 +26,10 @@ add_custom_command(TARGET main POST_BUILD
     ${CMAKE_SOURCE_DIR}/static $<TARGET_FILE_DIR:main>/static
     COMMENT "Copying static directory to the output directory"
 )
+
+
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/config.json $<TARGET_FILE_DIR:main>/config.json
+    COMMENT "Copying config.json directory to the output directory"
+)
