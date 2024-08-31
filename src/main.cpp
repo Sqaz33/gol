@@ -4,13 +4,12 @@
 #include <format>
 #include <memory>
 
-// #include "windows.h"
-
 #include "nlohmann/json.hpp"
 #include "crow.h"
 
 #include "include/goldb.hpp"
 #include "include/user.hpp"
+#include "include/golCrowApp.hpp"
 
 int main() {
     SetConsoleOutputCP(CP_UTF8); 
@@ -26,5 +25,7 @@ int main() {
         std::format("dbname={} user={} password={}", dbname, user, pword)
     );
 
+    gol_crow_app::GolCrowApp app("192.168.0.102", 80, db);
+    app.run();
 
 }

@@ -25,9 +25,21 @@ namespace goldb {
             std::string pword = user.password();
             replace(pword, "'", "''");
             bool res = tx.query_value<bool>(
-                std::format(R"(SELECT 1 FROM "Users" WHERE "login" = '{}' AND "password" = '{}')", login, pword)
+                std::format(
+                    R"delim(SELECT 
+                                CASE 
+                                    WHEN EXISTS (
+                                        SELECT 1 
+                                        FROM "Users" 
+                                        WHERE "login" = '{}' AND "password" = '{}'
+                                    ) 
+                                    THEN 1 
+                                    ELSE 0 
+                                END AS user_exists;
+                            )delim"
+                    , login, pword)
             );
-            return true;
+            return res;
         } 
         #ifdef DEBUG
         catch(const std::exception& e) {

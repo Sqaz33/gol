@@ -9,7 +9,11 @@ find_package(libpqxx CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Crow CONFIG REQUIRED)
 
-add_executable(main src/main.cpp src/goldb.cpp)
+add_executable(main 
+    src/main.cpp 
+    src/goldb.cpp
+    src/golCrowApp.cpp
+)
 target_link_libraries(main PRIVATE 
     libpqxx::pqxx
     nlohmann_json::nlohmann_json
