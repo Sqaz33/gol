@@ -38,6 +38,7 @@ private:
 private:
     void setupRoutes();
     bool verifyUserByJsonPostReq(const crow::request& req);
+    bool registerUserByJsonPostReq(const crow::request& req);
 };
 
 } // namespace gol_crow_app

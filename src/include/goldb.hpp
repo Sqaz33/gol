@@ -54,6 +54,15 @@ public:
      */
     bool isUserExistsWithLogin(const std::string& login);
 
+    /**
+     * @brief Заносит пользователя с его логином и паролем в базу данных.
+     * 
+     * @param user Объект пользователя.
+     * @return true Если удалось зарегистрировать пользователя.
+     * @return false Если не удалось зарегистрировать пользователя.
+     */
+    bool registerUser(const user::User& user);
+
 private:
     pqxx::connection con;
 };

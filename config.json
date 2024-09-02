@@ -1,7 +1,7 @@
 {
-    "dbname": "...",
-    "userlogin": "...",
-    "userpword": ...,
-    "serverIP": "...",
-    "serverPort": ...
+    "dbname": "postgres",
+    "userlogin": "postgres",
+    "userpword": 1568,
+    "serverIP": "192.168.180.47",
+    "serverPort": 80
 }
