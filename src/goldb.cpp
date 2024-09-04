@@ -64,6 +64,7 @@ namespace goldb {
             std::string pword = user.password();
             replace(pword, "'", "''");
             tx.exec0(std::format(R"delim(CALL add_new_user('{}', '{}'))delim", login, pword));
+            tx.commit();
             return true;
         } 
         #ifdef DEBUG
