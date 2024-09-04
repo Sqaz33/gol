@@ -20,9 +20,11 @@ int main() {
     std::string dbname = data["dbname"];
     std::string user = data["userlogin"];
     unsigned pword = data["userpword"];
+    std::string redisIP = data["redisServerIP"];
+    std::uint8_t redisPort = data["redisServerPort"];
 
     auto db = std::make_shared<goldb::GolDB>(
-        std::format("dbname={} user={} password={}", dbname, user, pword)
+        dbname, user, pword, redisIP, redisPort
     );
 
     std::string serverIP = data["serverIP"];

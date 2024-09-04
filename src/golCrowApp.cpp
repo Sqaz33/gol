@@ -26,14 +26,14 @@ void GolCrowApp::run() {
 void GolCrowApp::setupRoutes() {
     CROW_ROUTE(app, "/")([](){
         crow::response res;
-        res.set_static_file_info("static/index.html");
+        res.set_static_file_info("static/index/index.html");
         return res;
     });
 
     CROW_ROUTE(app, "/login")
     .methods(crow::HTTPMethod::Get)([](){
         crow::response res;
-        res.set_static_file_info("static/login.html");
+        res.set_static_file_info("static/login/login.html");
         return res;
     });
 
@@ -55,7 +55,7 @@ void GolCrowApp::setupRoutes() {
     CROW_ROUTE(app, "/register")
     .methods(crow::HTTPMethod::Get)([](){
         crow::response res;
-        res.set_static_file_info("static/register.html");
+        res.set_static_file_info("static/register/register.html");
         return res;
     });
 

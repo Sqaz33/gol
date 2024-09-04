@@ -2,6 +2,9 @@
     "dbname": "postgres",
     "userlogin": "postgres",
     "userpword": 1568,
-    "serverIP": "192.168.180.47",
-    "serverPort": 80
+    "serverIP": "192.168.0.103",
+    "serverPort": 80,
+    "redisServerIP": "172.21.231.22",
+    "redisServerPort": 6379
+
 }

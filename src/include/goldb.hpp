@@ -2,29 +2,36 @@
 #define SRC_INCLUDE_GOLDB_HPP
 
 #include <string>
+#include <format>
 
 #include "pqxx/pqxx"
+#include "sw/redis++/redis++.h"
 
 #include "user.hpp"
 
 namespace goldb {
 
+/**
+ * @brief class for postgres db interaction
+ * 
+ */
 class GolDB {
 public:
-    GolDB(const std::string& con) :
-        con(con)
+    GolDB(
+        const std::string& DBName,
+        const std::string& DBUser,
+        const std::string& DBPword,
+        const std::string& redisIP, 
+        std::uint8_t redisPort
+    ) :
+        con(std::format("dbname={} user={} password={}", DBName, DBUser, DBPword)),
+        redis(std::format("tcp://{}:{}", redisIP, redisPort))
     {}
 
     GolDB(const GolDB&) = delete;
     GolDB& operator=(const GolDB&) = delete;
-
-    GolDB(GolDB&& other) :
-        con(std::move(other.con))
-    {}
-
-    GolDB& operator=(GolDB&& other) {
-        con = std::move(other.con);
-    }
+    GolDB(GolDB&&) = delete;
+    GolDB& operator=(GolDB&&) = delete;
 
 public:
     /**
@@ -65,6 +72,7 @@ public:
 
 private:
     pqxx::connection con;
+    sw::redis::Redis redis;
 };
 
 } // namespace goldb
