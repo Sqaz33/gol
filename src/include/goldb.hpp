@@ -3,29 +3,31 @@
 
 #include <string>
 #include <format>
+#include <iostream>
 
 #include "pqxx/pqxx"
 #include "sw/redis++/redis++.h"
 
 #include "user.hpp"
+#include "redisUserCacher.hpp"
 
 namespace goldb {
 
 /**
- * @brief class for postgres db interaction
- * 
+ * @brief Class for postgres db interaction.
  */
 class GolDB {
 public:
+    //TODO: add try catch for connections constructions 
     GolDB(
         const std::string& DBName,
         const std::string& DBUser,
         const std::string& DBPword,
         const std::string& redisIP, 
-        std::uint8_t redisPort
+        std::uint16_t redisPort
     ) :
         con(std::format("dbname={} user={} password={}", DBName, DBUser, DBPword)),
-        redis(std::format("tcp://{}:{}", redisIP, redisPort))
+        redis(redisIP, redisPort)
     {}
 
     GolDB(const GolDB&) = delete;
@@ -34,15 +36,6 @@ public:
     GolDB& operator=(GolDB&&) = delete;
 
 public:
-    /**
-     * @brief Проверяет, существует ли пользователь с указанным логином и паролем в базе данных.
-     * 
-     * @param user Объект пользователя.
-     * @return true Если пользователь с таким логином и паролем существует.
-     * @return false Если пользователь с таким логином и паролем не найден.
-     */
-    bool isUserExist(const user::User& user);
-
     /**
      * @brief Вставляет нового пользователя, если не существует такового с тем же логином.
      * 
@@ -62,17 +55,19 @@ public:
     bool isUserExistsWithLogin(const std::string& login);
 
     /**
-     * @brief Заносит пользователя с его логином и паролем в базу данных.
+     * @brief Проверяет, существует ли пользователь с указанным логином и паролем в базе данных.
      * 
      * @param user Объект пользователя.
-     * @return true Если удалось зарегистрировать пользователя.
-     * @return false Если не удалось зарегистрировать пользователя.
+     * @return true Если пользователь с таким логином и паролем существует.
+     * @return false Если пользователь с таким логином и паролем не найден.
      */
-    bool registerUser(const user::User& user);
+    bool isUserExist(const user::User& user);
+
+    user::User getUserByLogin(const std::string& login);
 
 private:
     pqxx::connection con;
-    sw::redis::Redis redis;
+    redis_user_cacher::RedisUserCacher redis;
 };
 
 } // namespace goldb

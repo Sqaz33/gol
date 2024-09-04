@@ -15,6 +15,7 @@ add_executable(main
     src/goldb.cpp
     src/golCrowApp.cpp
     src/gameOfLife.cpp
+    src/redisUserCacher.cpp
 )
 target_link_libraries(main PRIVATE 
     libpqxx::pqxx

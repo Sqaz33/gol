@@ -9,7 +9,7 @@ namespace user {
 
 class User {
 public:
-    User() = delete;
+    User() = default;
 
     User(const std::tuple<std::string, std::string>& tpl) :
         m_login(std::get<0>(tpl)),

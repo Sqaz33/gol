@@ -19,6 +19,10 @@ namespace goldb {
     bool GolDB::isUserExist(const user::User& user) {
         using sql_tools::replace;
         try {
+            if (redis.isUserCached(user)) {
+                return true;
+            }
+
             pqxx::work tx(con);
             std::string login = user.login();
             replace(login, "'", "''");
@@ -39,6 +43,11 @@ namespace goldb {
                             )delim"
                     , login, pword)
             );
+
+            if (res) {
+                redis.cacheUser(user);
+            }
+
             return res;
         } 
         #ifdef DEBUG
@@ -53,10 +62,16 @@ namespace goldb {
     }
 
     bool GolDB::insertUserIfNotExists(const user::User& user) {
-        if (GolDB::isUserExistsWithLogin(user.login())) {
+        using sql_tools::replace;
+
+        if (redis.isUserCachedWithLogin(user.login())) {
             return false;
         }
-        using sql_tools::replace;
+
+        if (GolDB::isUserExistsWithLogin(user.login())) {
+            redis.cacheUser(user);
+            return false;
+        }
         try {
             pqxx::work tx(con);
             std::string login = user.login();
@@ -65,6 +80,8 @@ namespace goldb {
             replace(pword, "'", "''");
             tx.exec0(std::format(R"delim(CALL add_new_user('{}', '{}'))delim", login, pword));
             tx.commit();
+
+            redis.cacheUser(user);
             return true;
         } 
         #ifdef DEBUG
@@ -79,11 +96,13 @@ namespace goldb {
     }
 
     bool GolDB::isUserExistsWithLogin(const std::string& login) {
-        using sql_tools::replace;
+        if (redis.isUserCachedWithLogin(login)) {
+            return true;
+        }
         try {
             pqxx::work tx(con);
             std::string logincpy = login;
-            replace(logincpy, "'", "''");
+            sql_tools::replace(logincpy, "'", "''");
             bool res = tx.query_value<bool>(
                 std::format(
                     R"delim(SELECT 
@@ -99,6 +118,11 @@ namespace goldb {
                             )delim"
                     , logincpy)
             );
+
+            if (res) {
+                redis.cacheUser(GolDB::getUserByLogin(login));
+            }
+
             return res;
         } 
         #ifdef DEBUG
@@ -112,23 +136,27 @@ namespace goldb {
         return false;
     }
 
-    bool GolDB::registerUser(const user::User& user) {
-        using sql_tools::replace;
-        if (GolDB::isUserExistsWithLogin(user.login())) {
-            return false;
+    user::User GolDB::getUserByLogin(const std::string& login) {
+        if (redis.isUserCachedWithLogin(login)) {
+            return redis.getUserByLogin(login);
         }
+
         try {
             pqxx::work tx(con);
-            std::string login = user.login();
-            replace(login, "'", "''");
-            std::string pword = user.password();
-            replace(pword, "'", "''");
-            tx.exec0(std::format(R"delim(INSERT INTO "Users"("login", "password") 
-	                                VALUES ('{}', '{}');)delim", 
-                                    login, pword));
-            tx.commit();
-            return true;
-        } 
+            std::string logincpy = login;
+            sql_tools::replace(logincpy, "'", "''");
+            std::string pword = tx.query_value<std::string>(
+                std::format(
+                    R"delim(SELECT "password" FROM "Users" WHERE "login" ={})delim",
+                    logincpy
+                )
+            );
+            user::User user(login, pword);
+
+            redis.cacheUser(user);
+
+            return user;
+        }
         #ifdef DEBUG
         catch(const std::exception& e) {
             std::cout << e.what() << '\n';
@@ -137,6 +165,7 @@ namespace goldb {
         #else 
         catch(...) { }
         #endif
-        return false;
+        return user::User();
     }
+
 } // namespace goldb

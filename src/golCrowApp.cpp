@@ -91,7 +91,6 @@ void GolCrowApp::setupRoutes() {
 
 }
 
-
 bool GolCrowApp::verifyUserByJsonPostReq(const crow::request& req) {
     auto data = crow::json::load(req.body);
     if (!data) {
@@ -115,7 +114,7 @@ bool GolCrowApp::registerUserByJsonPostReq(const crow::request& req) {
     }
     std::string login = data["login"].s();
     std::string pword = data["pword"].s();
-    return db->registerUser(user::User(login, pword));
+    return db->insertUserIfNotExists(user::User(login, pword));
 }
 
 } // namespace gol_crow_app
