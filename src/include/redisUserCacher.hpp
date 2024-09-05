@@ -39,6 +39,15 @@ public:
     decltype(auto) ping() {
         return con.ping();
     }
+
+    bool isConnectionAlive() {
+        try {
+            con.ping();
+            return true;
+        } catch (...) {
+            return false;
+        }
+    }
     
 private:
     template <class T>

@@ -9,11 +9,11 @@
 
 #include "goldb.hpp"
 
-namespace gol_crow_app {
+namespace gol_crow_server {
 
-class GolCrowApp {
+class GolCrowServer {
 public:
-    GolCrowApp(const std::string& serverIP, std::uint8_t serverPort, std::shared_ptr<goldb::GolDB> db) :
+    GolCrowServer(const std::string& serverIP, std::uint8_t serverPort, std::shared_ptr<goldb::GolDB> db) :
         serverIP(serverIP)
         , serverPort(serverPort)
         , db(db)
@@ -21,10 +21,10 @@ public:
         setupRoutes();
     }
 
-    GolCrowApp(const GolCrowApp&) = delete;
-    GolCrowApp& operator=(const GolCrowApp&) = delete;
-    GolCrowApp(GolCrowApp&&) = delete; 
-    GolCrowApp& operator=(GolCrowApp&&) = delete;
+    GolCrowServer(const GolCrowServer&) = delete;
+    GolCrowServer& operator=(const GolCrowServer&) = delete;
+    GolCrowServer(GolCrowServer&&) = delete; 
+    GolCrowServer& operator=(GolCrowServer&&) = delete;
 
     void run();
 

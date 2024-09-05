@@ -13,7 +13,7 @@ find_package(redis++ CONFIG REQUIRED)
 add_executable(main 
     src/main.cpp 
     src/goldb.cpp
-    src/golCrowApp.cpp
+    src/golCrowServer.cpp
     src/gameOfLife.cpp
     src/redisUserCacher.cpp
 )

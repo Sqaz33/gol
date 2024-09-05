@@ -14,6 +14,8 @@
 
 namespace goldb {
 
+struct UseRedisIsAlive {};
+
 /**
  * @brief Class for postgres db interaction.
  */
@@ -35,6 +37,22 @@ public:
         } catch (const std::exception& e) {
             std::cout << e.what() << '\n';
             throw;
+        }
+    }
+
+    GolDB(
+        const UseRedisIsAlive&,
+        const std::string& DBName,
+        const std::string& DBUser,
+        const std::string& DBPword,
+        const std::string& redisIP, 
+        std::uint16_t redisPort
+    ) :
+        con(std::format("dbname={} user={} password={}", DBName, DBUser, DBPword)),
+        redis(std::in_place_t(), redisIP, redisPort)
+    {   
+        if (!redis->isConnectionAlive()) {
+            redis.reset();
         }
     }
 

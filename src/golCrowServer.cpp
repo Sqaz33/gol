@@ -1,4 +1,4 @@
-#include "include/golCrowApp.hpp"
+#include "include/golCrowServer.hpp"
 
 #include <exception>
 
@@ -13,9 +13,9 @@ namespace {
     }
 }
 
-namespace gol_crow_app {
+namespace gol_crow_server {
 
-void GolCrowApp::run() {
+void GolCrowServer::run() {
     app
     .bindaddr(serverIP)
     .port(serverPort)
@@ -23,7 +23,7 @@ void GolCrowApp::run() {
     .run();
 }
 
-void GolCrowApp::setupRoutes() {
+void GolCrowServer::setupRoutes() {
     CROW_ROUTE(app, "/")([](){
         crow::response res;
         res.set_static_file_info("static/index/index.html");
@@ -43,7 +43,7 @@ void GolCrowApp::setupRoutes() {
         if (hostsIP.count(hostIP)) {
             return "it's ok";
         }
-        if (GolCrowApp::verifyUserByJsonPostReq(req)) {
+        if (GolCrowServer::verifyUserByJsonPostReq(req)) {
             hostsIP.insert(hostIP);
             return "it's ok";
         } 
@@ -65,7 +65,7 @@ void GolCrowApp::setupRoutes() {
         if (hostsIP.count(hostIP)) {
             return "it's ok";
         }
-        if (GolCrowApp::registerUserByJsonPostReq(req)) {
+        if (GolCrowServer::registerUserByJsonPostReq(req)) {
             hostsIP.insert(hostIP);
             return "it's ok";
         } 
@@ -91,7 +91,7 @@ void GolCrowApp::setupRoutes() {
 
 }
 
-bool GolCrowApp::verifyUserByJsonPostReq(const crow::request& req) {
+bool GolCrowServer::verifyUserByJsonPostReq(const crow::request& req) {
     auto data = crow::json::load(req.body);
     if (!data) {
         #ifdef DEBUG
@@ -104,7 +104,7 @@ bool GolCrowApp::verifyUserByJsonPostReq(const crow::request& req) {
     return db->isUserExist(user::User(login, pword));
 }
 
-bool GolCrowApp::registerUserByJsonPostReq(const crow::request& req) {
+bool GolCrowServer::registerUserByJsonPostReq(const crow::request& req) {
     auto data = crow::json::load(req.body);
     if (!data) {
         #ifdef DEBUG
