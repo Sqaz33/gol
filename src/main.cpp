@@ -24,12 +24,11 @@ int main() {
     std::uint16_t redisPort = data["redisServerPort"];
 
     auto db = std::make_shared<goldb::GolDB>(
-        dbname, user, pword, redisIP, redisPort
+        dbname, user, pword
     );
 
     std::string serverIP = data["serverIP"];
     std::uint16_t serverPort = data["serverPort"];
     gol_crow_app::GolCrowApp app(serverIP, serverPort, db);
     app.run();
-
 }

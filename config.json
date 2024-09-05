@@ -1,9 +1,0 @@
-{
-    "dbname": "goldb",
-    "userlogin": "postgres",
-    "userpword": "1568",
-    "serverIP": "192.168.0.102",
-    "serverPort": 80,
-    "redisServerIP": "172.31.4.199",
-    "redisServerPort": 6379
-}

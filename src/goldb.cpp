@@ -19,7 +19,7 @@ namespace goldb {
     bool GolDB::isUserExist(const user::User& user) {
         using sql_tools::replace;
         try {
-            if (redis.isUserCached(user)) {
+            if (redis && redis->isUserCached(user)) {
                 return true;
             }
 
@@ -44,8 +44,8 @@ namespace goldb {
                     , login, pword)
             );
 
-            if (res) {
-                redis.cacheUser(user);
+            if (redis && res) {
+                redis->cacheUser(user);
             }
 
             return res;
@@ -64,12 +64,14 @@ namespace goldb {
     bool GolDB::insertUserIfNotExists(const user::User& user) {
         using sql_tools::replace;
 
-        if (redis.isUserCachedWithLogin(user.login())) {
+        if (redis && redis->isUserCachedWithLogin(user.login())) {
             return false;
         }
 
         if (GolDB::isUserExistsWithLogin(user.login())) {
-            redis.cacheUser(user);
+            if (redis) {
+                redis->cacheUser(user);
+            }
             return false;
         }
         try {
@@ -81,7 +83,10 @@ namespace goldb {
             tx.exec0(std::format(R"delim(CALL add_new_user('{}', '{}'))delim", login, pword));
             tx.commit();
 
-            redis.cacheUser(user);
+            if (redis) {
+                redis->cacheUser(user);
+            }
+
             return true;
         } 
         #ifdef DEBUG
@@ -96,7 +101,7 @@ namespace goldb {
     }
 
     bool GolDB::isUserExistsWithLogin(const std::string& login) {
-        if (redis.isUserCachedWithLogin(login)) {
+        if (redis && redis->isUserCachedWithLogin(login)) {
             return true;
         }
         try {
@@ -119,8 +124,8 @@ namespace goldb {
                     , logincpy)
             );
 
-            if (res) {
-                redis.cacheUser(GolDB::getUserByLogin(login));
+            if (res && redis) {
+                redis->cacheUser(GolDB::getUserByLogin(login));
             }
 
             return res;
@@ -137,8 +142,8 @@ namespace goldb {
     }
 
     user::User GolDB::getUserByLogin(const std::string& login) {
-        if (redis.isUserCachedWithLogin(login)) {
-            return redis.getUserByLogin(login);
+        if (redis && redis->isUserCachedWithLogin(login)) {
+            return redis->getUserByLogin(login);
         }
 
         try {
@@ -153,7 +158,9 @@ namespace goldb {
             );
             user::User user(login, pword);
 
-            redis.cacheUser(user);
+            if (redis) {
+                redis->cacheUser(user);
+            }
 
             return user;
         }

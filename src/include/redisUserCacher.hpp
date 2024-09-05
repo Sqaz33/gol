@@ -35,6 +35,10 @@ public:
     bool isUserCachedWithLogin(const std::string& login);
     bool isUserCached(const user::User& user);
     user::User getUserByLogin(const std::string& login);
+
+    decltype(auto) ping() {
+        return con.ping();
+    }
     
 private:
     template <class T>

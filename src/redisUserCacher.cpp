@@ -30,4 +30,5 @@ namespace redis_user_cacher {
         return user::User(login, p.value());
     }
 
+
 } // redis_user_cacher

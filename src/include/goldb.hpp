@@ -4,6 +4,7 @@
 #include <string>
 #include <format>
 #include <iostream>
+#include <optional>
 
 #include "pqxx/pqxx"
 #include "sw/redis++/redis++.h"
@@ -27,7 +28,22 @@ public:
         std::uint16_t redisPort
     ) :
         con(std::format("dbname={} user={} password={}", DBName, DBUser, DBPword)),
-        redis(redisIP, redisPort)
+        redis(std::in_place_t(), redisIP, redisPort)
+    {   
+        try {
+            redis->ping();
+        } catch (const std::exception& e) {
+            std::cout << e.what() << '\n';
+            throw;
+        }
+    }
+
+    GolDB(
+        const std::string& DBName,
+        const std::string& DBUser,
+        const std::string& DBPword
+    ):
+        con(std::format("dbname={} user={} password={}", DBName, DBUser, DBPword))
     {}
 
     GolDB(const GolDB&) = delete;
@@ -67,7 +83,7 @@ public:
 
 private:
     pqxx::connection con;
-    redis_user_cacher::RedisUserCacher redis;
+    std::optional<redis_user_cacher::RedisUserCacher> redis;
 };
 
 } // namespace goldb
